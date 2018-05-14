@@ -36,6 +36,47 @@ var Ball = (function () {
     };
     return Ball;
 }());
+var Bouncing = (function () {
+    function Bouncing(s) {
+        s.x += s.speedX;
+        s.y += s.speedY;
+        if (s.x < s.minWidth || s.x > s.maxWidth) {
+            s.speedX *= -1;
+        }
+        if (s.y < 0 || s.y > s.maxHeight) {
+            s.speedY *= -1;
+        }
+        s.draw();
+    }
+    return Bouncing;
+}());
+var Floating = (function () {
+    function Floating(m) {
+        if (m.x < m.minWidth) {
+            m.x = m.minWidth;
+            m.speedX *= -1;
+            m.speedX *= m.friction;
+        }
+        if (m.x > m.maxWidth) {
+            m.x = m.maxWidth;
+            m.speedX *= -1;
+            m.speedX *= m.friction;
+        }
+        if (m.y + m.speedY > m.maxHeight) {
+            m.y = m.maxHeight;
+            m.speedY *= -1;
+            m.speedY *= m.friction;
+            m.speedX *= m.friction;
+        }
+        else {
+            m.speedY += m.gravity;
+        }
+        m.x += m.speedX;
+        m.y += m.speedY;
+        m.draw();
+    }
+    return Floating;
+}());
 var Main = (function () {
     function Main() {
         this.balls = [];
@@ -56,50 +97,25 @@ var Main = (function () {
 window.addEventListener("load", function () { return new Main(); });
 var MoonBall = (function (_super) {
     __extends(MoonBall, _super);
-    function MoonBall() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function MoonBall(minWidth, maxWidth) {
+        var _this = _super.call(this, minWidth, maxWidth, "basketball") || this;
+        _this.behaviour = Floating;
+        return _this;
     }
     MoonBall.prototype.update = function () {
-        if (this.x < this.minWidth) {
-            this.x = this.minWidth;
-            this.speedX *= -1;
-            this.speedX *= this.friction;
-        }
-        if (this.x > this.maxWidth) {
-            this.x = this.maxWidth;
-            this.speedX *= -1;
-            this.speedX *= this.friction;
-        }
-        if (this.y + this.speedY > this.maxHeight) {
-            this.y = this.maxHeight;
-            this.speedY *= -1;
-            this.speedY *= this.friction;
-            this.speedX *= this.friction;
-        }
-        else {
-            this.speedY += this.gravity;
-        }
-        this.x += this.speedX;
-        this.y += this.speedY;
-        this.draw();
+        new Floating(this);
     };
     return MoonBall;
 }(Ball));
 var SpaceBall = (function (_super) {
     __extends(SpaceBall, _super);
-    function SpaceBall() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function SpaceBall(minWidth, maxWidth) {
+        var _this = _super.call(this, minWidth, maxWidth) || this;
+        _this.behaviour = Bouncing;
+        return _this;
     }
     SpaceBall.prototype.update = function () {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.x < this.minWidth || this.x > this.maxWidth) {
-            this.speedX *= -1;
-        }
-        if (this.y < 0 || this.y > this.maxHeight) {
-            this.speedY *= -1;
-        }
-        this.draw();
+        new Bouncing(this);
     };
     return SpaceBall;
 }(Ball));
