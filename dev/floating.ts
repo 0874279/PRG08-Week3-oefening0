@@ -1,31 +1,26 @@
-class Floating{
-    constructor(m:MoonBall){
-        if (m.x < m.minWidth)
+class Floating implements Movement{
+    ball:SpaceBall
+    constructor(m:SpaceBall){
+        this.ball = m
+    }
+
+    
+
+    public update(): void {
+        this.ball.x += this.ball.speedX
+        this.ball.y += this.ball.speedY
+        
+        if (this.ball.x < this.ball.minWidth || this.ball.x > this.ball.maxWidth)
         {
-            m.x = m.minWidth
-            m.speedX *= -1
-            m.speedX *= m.friction
+            this.ball.speedX *= -1
+            
         }
-        if(m.x > m.maxWidth) {
-            m.x = m.maxWidth
-            m.speedX *= -1
-            m.speedX *= m.friction
-        }
-        if (m.y + m.speedY > m.maxHeight)
+        if (this.ball.y < 0 || this.ball.y > this.ball.maxHeight)
         {
-            m.y = m.maxHeight;
-            m.speedY *= -1
-            // Weerstand
-            m.speedY *= m.friction
-            m.speedX *= m.friction
-        }
-        else {
-            m.speedY += m.gravity
+            this.ball.speedY *= -1
         }
 
-        m.x += m.speedX
-        m.y += m.speedY
-        
-        m.draw()
+        this.ball.draw()
     }
+    
 }

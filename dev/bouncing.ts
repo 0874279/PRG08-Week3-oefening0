@@ -1,19 +1,37 @@
-class Bouncing{
+class Bouncing implements Movement{
+    ball:MoonBall
 
-    constructor(s:SpaceBall){
-        s.x += s.speedX
-        s.y += s.speedY
+    constructor(s:MoonBall){
+        this.ball = s
+    }
+
+    public update(){
+        if (this.ball.x < this.ball.minWidth)
+        {
+            this.ball.x = this.ball.minWidth
+            this.ball.speedX *= -1
+            this.ball.speedX *= this.ball.friction
+        }
+        if(this.ball.x > this.ball.maxWidth) {
+            this.ball.x = this.ball.maxWidth
+            this.ball.speedX *= -1
+            this.ball.speedX *= this.ball.friction
+        }
+        if (this.ball.y + this.ball.speedY > this.ball.maxHeight)
+        {
+            this.ball.y = this.ball.maxHeight;
+            this.ball.speedY *= -1
+            // Weerstand
+            this.ball.speedY *= this.ball.friction
+            this.ball.speedX *= this.ball.friction
+        }
+        else {
+            this.ball.speedY += this.ball.gravity
+        }
+
+        this.ball.x += this.ball.speedX
+        this.ball.y += this.ball.speedY
         
-        if (s.x < s.minWidth || s.x > s.maxWidth)
-        {
-            s.speedX *= -1
-            
-        }
-        if (s.y < 0 || s.y > s.maxHeight)
-        {
-            s.speedY *= -1
-        }
-
-        s.draw()
+        this.ball.draw()
     }
 }

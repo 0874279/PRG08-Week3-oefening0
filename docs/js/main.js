@@ -38,50 +38,56 @@ var Ball = (function () {
 }());
 var Bouncing = (function () {
     function Bouncing(s) {
-        s.x += s.speedX;
-        s.y += s.speedY;
-        if (s.x < s.minWidth || s.x > s.maxWidth) {
-            s.speedX *= -1;
-        }
-        if (s.y < 0 || s.y > s.maxHeight) {
-            s.speedY *= -1;
-        }
-        s.draw();
+        this.ball = s;
     }
+    Bouncing.prototype.update = function () {
+        if (this.ball.x < this.ball.minWidth) {
+            this.ball.x = this.ball.minWidth;
+            this.ball.speedX *= -1;
+            this.ball.speedX *= this.ball.friction;
+        }
+        if (this.ball.x > this.ball.maxWidth) {
+            this.ball.x = this.ball.maxWidth;
+            this.ball.speedX *= -1;
+            this.ball.speedX *= this.ball.friction;
+        }
+        if (this.ball.y + this.ball.speedY > this.ball.maxHeight) {
+            this.ball.y = this.ball.maxHeight;
+            this.ball.speedY *= -1;
+            this.ball.speedY *= this.ball.friction;
+            this.ball.speedX *= this.ball.friction;
+        }
+        else {
+            this.ball.speedY += this.ball.gravity;
+        }
+        this.ball.x += this.ball.speedX;
+        this.ball.y += this.ball.speedY;
+        this.ball.draw();
+    };
     return Bouncing;
 }());
 var Floating = (function () {
     function Floating(m) {
-        if (m.x < m.minWidth) {
-            m.x = m.minWidth;
-            m.speedX *= -1;
-            m.speedX *= m.friction;
-        }
-        if (m.x > m.maxWidth) {
-            m.x = m.maxWidth;
-            m.speedX *= -1;
-            m.speedX *= m.friction;
-        }
-        if (m.y + m.speedY > m.maxHeight) {
-            m.y = m.maxHeight;
-            m.speedY *= -1;
-            m.speedY *= m.friction;
-            m.speedX *= m.friction;
-        }
-        else {
-            m.speedY += m.gravity;
-        }
-        m.x += m.speedX;
-        m.y += m.speedY;
-        m.draw();
+        this.ball = m;
     }
+    Floating.prototype.update = function () {
+        this.ball.x += this.ball.speedX;
+        this.ball.y += this.ball.speedY;
+        if (this.ball.x < this.ball.minWidth || this.ball.x > this.ball.maxWidth) {
+            this.ball.speedX *= -1;
+        }
+        if (this.ball.y < 0 || this.ball.y > this.ball.maxHeight) {
+            this.ball.speedY *= -1;
+        }
+        this.ball.draw();
+    };
     return Floating;
 }());
 var Main = (function () {
     function Main() {
         this.balls = [];
-        this.balls.push(new MoonBall(0, window.innerWidth / 2));
-        this.balls.push(new SpaceBall(window.innerWidth / 2, window.innerWidth));
+        this.balls.push(new MoonBall(0, window.innerWidth));
+        this.balls.push(new SpaceBall(0, window.innerWidth));
         this.gameLoop();
     }
     Main.prototype.gameLoop = function () {
@@ -99,11 +105,17 @@ var MoonBall = (function (_super) {
     __extends(MoonBall, _super);
     function MoonBall(minWidth, maxWidth) {
         var _this = _super.call(this, minWidth, maxWidth, "basketball") || this;
-        _this.behaviour = Floating;
+        _this.behaviour = new Bouncing(_this);
         return _this;
     }
     MoonBall.prototype.update = function () {
-        new Floating(this);
+        this.behaviour.update();
+        if (this.x >= window.innerWidth / 2) {
+            this.behaviour = new Floating(this);
+        }
+        else if (this.x <= window.innerWidth / 2) {
+            this.behaviour = new Bouncing(this);
+        }
     };
     return MoonBall;
 }(Ball));
@@ -111,11 +123,17 @@ var SpaceBall = (function (_super) {
     __extends(SpaceBall, _super);
     function SpaceBall(minWidth, maxWidth) {
         var _this = _super.call(this, minWidth, maxWidth) || this;
-        _this.behaviour = Bouncing;
+        _this.behaviour = new Floating(_this);
         return _this;
     }
     SpaceBall.prototype.update = function () {
-        new Bouncing(this);
+        this.behaviour.update();
+        if (this.x >= window.innerWidth / 2) {
+            this.behaviour = new Floating(this);
+        }
+        else if (this.x <= window.innerWidth / 2) {
+            this.behaviour = new Bouncing(this);
+        }
     };
     return SpaceBall;
 }(Ball));

@@ -1,12 +1,20 @@
 class MoonBall extends Ball {
-    behaviour:Floating
+    behaviour:Movement
+    
 
     constructor(minWidth : number, maxWidth : number){
         super(minWidth,maxWidth, "basketball")
-        this.behaviour = Floating
+        this.behaviour = new Bouncing(this)
+        
     }
 
     public update() : void {
-        new Floating(this)
+        this.behaviour.update()
+        if (this.x >= window.innerWidth/2){
+            this.behaviour = new Floating(this)
+        }
+        else if (this.x <= window.innerWidth/2){
+            this.behaviour = new Bouncing(this)
+        }
     }
 }

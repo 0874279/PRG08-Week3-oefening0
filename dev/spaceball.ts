@@ -1,12 +1,18 @@
 class SpaceBall extends Ball {
-    behaviour:Bouncing
+    behaviour:Movement
 
     constructor(minWidth : number, maxWidth : number){
         super(minWidth,maxWidth)
-        this.behaviour = Bouncing
+        this.behaviour = new Floating(this)
     }
 
     public update() : void {
-        new Bouncing(this)
+        this.behaviour.update()
+        if (this.x >= window.innerWidth/2){
+            this.behaviour = new Floating(this)
+        }
+        else if (this.x <= window.innerWidth/2){
+            this.behaviour = new Bouncing(this)
+        }
     }
 }
